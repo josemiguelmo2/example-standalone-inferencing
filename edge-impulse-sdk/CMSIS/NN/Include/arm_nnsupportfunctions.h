@@ -664,6 +664,10 @@ void arm_nn_mult_q7(
 #define EXP_ON_NEG(x)  arm_nn_exp_on_negative_values((x))
 #define ONE_OVER1(x)   arm_nn_one_over_one_plus_x_for_x_in_0_1((x))
 
+// LIB_DEBUG
+#undef __RESTRICT
+#define __RESTRICT
+
 /**
  * @brief           Saturating doubling high multiply. Result matches
  *                  NEON instruction VQRDMULH.

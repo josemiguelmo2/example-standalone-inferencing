@@ -2,7 +2,7 @@ NAME = edge-impulse-standalone
 
 EI_SDK?=edge-impulse-sdk
 
-CFLAGS += -g -DALLOC -DTF_LITE_STATIC_MEMORY -DNDEBUG -O3 -DTF_LITE_DISABLE_X86_NEON -DEI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN=1 -DARM_MATH_NEON=1 -mfloat-abi=hard -mfpu=neon
+CFLAGS += -g -DALLOC -DTF_LITE_STATIC_MEMORY -DNDEBUG -O3 -DTF_LITE_DISABLE_X86_NEON -DEI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN=1 -D__ARM_FEATURE_DSP=1 -DARM_MATH_NEON=1 -mfloat-abi=hard -mfpu=neon
 CFLAGS += -I./
 CFLAGS += -I./source/
 CFLAGS += -I${EI_SDK}/
@@ -61,3 +61,4 @@ clean:
 	rm -f $(COBJECTS)
 	rm -f $(CCOBJECTS)
 	rm -f $(CXXOBJECTS)
+	rm -f build/$(NAME)
