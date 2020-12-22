@@ -2,7 +2,15 @@ NAME = edge-impulse-standalone
 
 EI_SDK?=edge-impulse-sdk
 
-CFLAGS += -g -DALLOC -DTF_LITE_STATIC_MEMORY -DNDEBUG -O3 -DTF_LITE_DISABLE_X86_NEON -DEI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN=1 -D__ARM_FEATURE_DSP=1 -DARM_MATH_NEON=1 -mfloat-abi=hard -mfpu=neon
+CC_VERSION = $(shell $(CC) --version)
+
+CFLAGS += -g -DALLOC -DTF_LITE_STATIC_MEMORY -DNDEBUG -O3 -DEI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN=1 -D__ARM_FEATURE_DSP=1 -DARM_MATH_DSP=1
+ifneq (,$(findstring x86,$(CC_VERSION)))
+	CFLAGS += -D__GNUC_PYTHON__=1
+else
+	CFLAGS += -DTF_LITE_DISABLE_X86_NEON -DARM_MATH_NEON=1 -mfloat-abi=hard -mfpu=neon
+endif
+
 CFLAGS += -I./
 CFLAGS += -I./source/
 CFLAGS += -I${EI_SDK}/
