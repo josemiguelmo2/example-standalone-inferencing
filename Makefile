@@ -2,7 +2,7 @@ NAME = edge-impulse-standalone
 
 EI_SDK?=edge-impulse-sdk
 
-CFLAGS += -g -DALLOC -DTF_LITE_STATIC_MEMORY -DNDEBUG -O3 -DTF_LITE_DISABLE_X86_NEON -DEI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN=1 -DARM_MATH_NEON=1
+CFLAGS += -g -DALLOC -DTF_LITE_STATIC_MEMORY -DNDEBUG -O3 -DTF_LITE_DISABLE_X86_NEON -DEI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN=1 -DARM_MATH_NEON=1 -mfloat-abi=hard -mfpu=neon
 CFLAGS += -I./
 CFLAGS += -I./source/
 CFLAGS += -I${EI_SDK}/
@@ -45,7 +45,7 @@ $(CXXOBJECTS) : %.o : %.cpp
 $(CCOBJECTS) : %.o : %.cc
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) -std=gnu11 $(CFLAGS) -c $^ -o $@
 
 %.o: %.cc
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -c $^ -o $@
