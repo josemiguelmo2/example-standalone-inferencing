@@ -29,7 +29,7 @@ CFLAGS += -I./tflite-model
 CXXFLAGS += -std=c++11
 
 CSOURCES = ${EI_SDK}/tensorflow/lite/c/common.c $(wildcard ${EI_SDK}/CMSIS/NN/Source/ActivationFunctions/*.c) $(wildcard ${EI_SDK}/CMSIS/NN/Source/BasicMathFunctions/*.c) $(wildcard ${EI_SDK}/CMSIS/NN/Source/ConcatenationFunctions/*.c) $(wildcard ${EI_SDK}/CMSIS/NN/Source/ConvolutionFunctions/*.c) $(wildcard ${EI_SDK}/CMSIS/NN/Source/FullyConnectedFunctions/*.c) $(wildcard ${EI_SDK}/CMSIS/NN/Source/NNSupportFunctions/*.c) $(wildcard ${EI_SDK}/CMSIS/NN/Source/PoolingFunctions/*.c) $(wildcard ${EI_SDK}/CMSIS/NN/Source/ReshapeFunctions/*.c) $(wildcard ${EI_SDK}/CMSIS/NN/Source/SoftmaxFunctions/*.c)
-CXXSOURCES = $(wildcard source/*.cpp) $(wildcard ${EI_SDK}/dsp/kissfft/*.cpp) $(wildcard ${EI_SDK}/dsp/dct/*.cpp) $(wildcard ./${EI_SDK}/dsp/memory.cpp) $(wildcard ${EI_SDK}/porting/posix/*.c*)
+CXXSOURCES = $(wildcard source/*.cpp) $(wildcard ${EI_SDK}/dsp/kissfft/*.cpp) $(wildcard ${EI_SDK}/dsp/dct/*.cpp) $(wildcard ./${EI_SDK}/dsp/memory.cpp) $(wildcard ${EI_SDK}/porting/posix/*.c*) $(wildcard tflite-model/*.cpp)
 CCSOURCES = $(wildcard ${EI_SDK}/tensorflow/lite/kernels/*.cc) $(wildcard ${EI_SDK}/tensorflow/lite/kernels/internal/*.cc) $(wildcard ${EI_SDK}/tensorflow/lite/micro/kernels/*.cc) $(wildcard ${EI_SDK}/tensorflow/lite/micro/*.cc) $(wildcard ${EI_SDK}/tensorflow/lite/micro/memory_planner/*.cc) $(wildcard ${EI_SDK}/tensorflow/lite/core/api/*.cc)
 
 COBJECTS := $(patsubst %.c,%.o,$(CSOURCES))
