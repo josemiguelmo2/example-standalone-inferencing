@@ -257,8 +257,6 @@ extern "C" EI_IMPULSE_ERROR run_classifier_continuous(signal_t *signal, ei_impul
 
     result->timing.dsp = ei_read_timer_ms() - dsp_start_ms;
 
-    print_matrix("this frame features", &static_features_matrix, 6, 18);
-
     if (debug) {
         ei_printf("\r\nFeatures (%d ms.): ", result->timing.dsp);
         for (size_t ix = 0; ix < static_features_matrix.cols; ix++) {
@@ -283,8 +281,6 @@ extern "C" EI_IMPULSE_ERROR run_classifier_continuous(signal_t *signal, ei_impul
             classify_matrix.buffer[m_ix] = static_features_matrix.buffer[m_ix];
         }
 
-        print_matrix("before_normalization", &classify_matrix, 6, 18);
-
         if (is_mfcc) {
             calc_cepstral_mean_and_var_normalization_mfcc(&classify_matrix, ei_dsp_blocks[0].config);
         }
@@ -296,14 +292,12 @@ extern "C" EI_IMPULSE_ERROR run_classifier_continuous(signal_t *signal, ei_impul
         }
         result->timing.dsp += ei_read_timer_ms() - dsp_start_ms;
 
-        print_matrix("classify_matrix", &classify_matrix, 6, 18);
-
         ei_impulse_error = run_inference(&classify_matrix, result, debug);
 
-        // for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
-        //     result->classification[ix].value =
-        //         /*run_moving_average_filter(*/&classifier_maf[ix], result->classification[ix].value/*)*/;
-        // }
+        for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
+            result->classification[ix].value =
+                run_moving_average_filter(&classifier_maf[ix], result->classification[ix].value);
+        }
 
         /* Shift the feature buffer for new data */
         for (size_t i = 0; i < (EI_CLASSIFIER_NN_INPUT_FRAME_SIZE - feature_size); i++) {
@@ -767,8 +761,6 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
         }
         ei_printf("\n");
     }
-
-    print_matrix("features_matrix", &features_matrix, 6, 18);
 
 #if EI_CLASSIFIER_INFERENCING_ENGINE != EI_CLASSIFIER_NONE
     if (debug) {

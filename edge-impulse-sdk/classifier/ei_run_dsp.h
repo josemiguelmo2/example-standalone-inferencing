@@ -41,21 +41,6 @@ namespace {
 
 using namespace ei;
 
-void print_matrix(const char *name, matrix_t *matrix, uint16_t rows, uint16_t cols) {
-    if (matrix->rows * matrix->cols != rows * cols) {
-        printf("print_matrix %s FAILED dimensions wrong (expected: %d, but had %d)\n", name,
-            (int)(matrix->rows * matrix->cols), (int)(rows * cols));
-        return;
-    }
-    printf("%s (%hux%hu):\n", name, rows, cols);
-    for (size_t row = 0; row < rows; row++) {
-        for (size_t col = 0; col < cols; col++) {
-            printf("%.5f ", matrix->buffer[(row * cols) + col]);
-        }
-        printf("\n");
-    }
-}
-
 #if defined(EI_DSP_IMAGE_BUFFER_STATIC_SIZE)
 float ei_dsp_image_buffer[EI_DSP_IMAGE_BUFFER_STATIC_SIZE];
 #endif
@@ -322,8 +307,6 @@ __attribute__((unused)) int extract_mfcc_features(signal_t *signal, matrix_t *ou
         ei_printf("ERR: MFCC failed (%d)\n", ret);
         EIDSP_ERR(ret);
     }
-
-    print_matrix("before_normalization", output_matrix, 6, 18);
 
     // cepstral mean and variance normalization
     ret = speechpy::processing::cmvnw(output_matrix, config.win_size, true);
