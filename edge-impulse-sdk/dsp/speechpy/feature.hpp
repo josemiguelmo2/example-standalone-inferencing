@@ -32,6 +32,16 @@
 namespace ei {
 namespace speechpy {
 
+void print_matrix2(const char *name, ei::matrix_t *matrix) {
+    printf("%s (%ux%u):\n", name, matrix->rows, matrix->cols);
+    for (size_t row = 0; row < matrix->rows; row++) {
+        for (size_t col = 0; col < matrix->cols; col++) {
+            printf("%.5f ", matrix->buffer[(row * matrix->cols) + col]);
+        }
+        printf("\n");
+    }
+}
+
 class feature {
 public:
     /**
@@ -277,6 +287,9 @@ public:
             if (ret != 0) {
                 EIDSP_ERR(ret);
             }
+
+            // printf("signal_frame %d: ", (int)ix);
+            // print_matrix2("signal_frame", &signal_frame);
 
             ret = processing::power_spectrum(
                 signal_frame.buffer,

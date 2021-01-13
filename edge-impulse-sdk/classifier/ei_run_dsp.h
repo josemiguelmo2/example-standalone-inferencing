@@ -43,8 +43,8 @@ using namespace ei;
 
 void print_matrix(const char *name, matrix_t *matrix, uint16_t rows, uint16_t cols) {
     if (matrix->rows * matrix->cols != rows * cols) {
-        printf("print_matrix %s FAILED dimensions wrong (expected: %hu, but had %hu)\n", name,
-            matrix->rows * matrix->cols, rows * cols);
+        printf("print_matrix %s FAILED dimensions wrong (expected: %d, but had %d)\n", name,
+            (int)(matrix->rows * matrix->cols), (int)(rows * cols));
         return;
     }
     printf("%s (%hux%hu):\n", name, rows, cols);

@@ -21,10 +21,13 @@ const int16_t wav_file_raw[200000] = {
 };
 
 // slice of data (250 ms.)
+size_t wav_file_total_offset = 0;
 int16_t wav_file_slice[SLICE_SIZE];
 
 // signal_t references to this
 int wav_file_slice_get_data(size_t offset, size_t length, float *out_ptr) {
+    printf("wav_file_slice_get_data %lu - %lu\n", wav_file_total_offset + offset, wav_file_total_offset + offset + length);
+
     return numpy::int16_to_float(wav_file_slice + offset, out_ptr, length);
 }
 
@@ -35,6 +38,8 @@ int16_t wav_file_onesec[16000];
 
 // signal_t references to this
 int wav_file_onesec_get_data(size_t offset, size_t length, float *out_ptr) {
+    printf("wav_file_onesec_get_data %lu - %lu\n", offset, offset + length);
+
     return numpy::int16_to_float(wav_file_onesec + offset, out_ptr, length);
 }
 
@@ -80,10 +85,12 @@ int main(int argc, char **argv) {
 
     ei_impulse_result_t result;
 
-    printf("  \n");
+    printf("         \n");
 
     // loop over in 250ms. slices
     for (size_t wav_offset = 0; wav_offset < max_time; wav_offset += SLICE_SIZE) {
+        wav_file_total_offset = wav_offset;
+
         // copy in the slice from the raw data
         memcpy(wav_file_slice, wav_file_raw + wav_offset, SLICE_SIZE * sizeof(int16_t));
 
@@ -101,6 +108,7 @@ int main(int argc, char **argv) {
         if (wav_offset + SLICE_SIZE < EI_CLASSIFIER_RAW_SAMPLE_COUNT) {
             // printf("skipping, no full frame yet\n");
             // then continue
+            printf("\n");
             continue;
         }
 
