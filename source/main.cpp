@@ -2,7 +2,7 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
-#include "ei_run_classifier.h"
+#include "edge-impulse-sdk/classifier/ei_run_classifier.h"
 
 /** These are the outcomes we expect:
  *
