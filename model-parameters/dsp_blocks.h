@@ -28,11 +28,16 @@
 
 const size_t ei_dsp_blocks_size = 1;
 ei_model_dsp_t ei_dsp_blocks[ei_dsp_blocks_size] = {
-    { // DSP block 8
-        108,
+    { // DSP block 3
+        650,
         &extract_mfcc_features,
-        (void*)&ei_dsp_config_8
+        (void*)&ei_dsp_config_3
     }
+};
+
+const size_t ei_dsp_blocks_i16_size = 0;
+ei_model_dsp_i16_t ei_dsp_blocks_i16[ei_dsp_blocks_i16_size] = {
+
 };
 
 #endif // _EI_CLASSIFIER_DSP_BLOCKS_H_

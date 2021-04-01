@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow/lite/micro/kernels/scratch_buffers.h"
+#include "edge-impulse-sdk/tensorflow/lite/micro/kernels/scratch_buffers.h"
 
 #include <limits.h>
 
@@ -53,17 +53,29 @@ namespace micro {
 #endif
 
 namespace {
+#if defined (__GNUC__)
+static int8_t scratch_mem_x[SCRATCH_MEM_X_SIZE] __attribute__((section(".Xdata")));
+#else
 #pragma Bss(".Xdata")
 static int8_t scratch_mem_x[SCRATCH_MEM_X_SIZE];
 #pragma Bss()
+#endif
 
+#if defined (__GNUC__)
+static int8_t scratch_mem_y[SCRATCH_MEM_Y_SIZE] __attribute__((section(".Ydata")));
+#else
 #pragma Bss(".Ydata")
 static int8_t scratch_mem_y[SCRATCH_MEM_Y_SIZE];
 #pragma Bss()
+#endif
 
+#if defined (__GNUC__)
+static int8_t scratch_mem_z[SCRATCH_MEM_Z_SIZE] __attribute__((section(".Zdata")));
+#else
 #pragma Bss(".Zdata")
 static int8_t scratch_mem_z[SCRATCH_MEM_Z_SIZE];
 #pragma Bss()
+#endif
 }  // namespace
 
 static int8_t *scratch_mem[] = {scratch_mem_x, scratch_mem_y, scratch_mem_z};

@@ -23,6 +23,7 @@
 #ifndef _EI_CLASSIFIER_CONFIG_H_
 #define _EI_CLASSIFIER_CONFIG_H_
 
+// clang-format off
 #ifndef EI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN
 #if defined(__MBED__)
     #include "mbed.h"
@@ -31,7 +32,7 @@
     #else
         #define EI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN      1
     #endif // Mbed OS 5.7 version check
-#elif defined(__TARGET_CPU_CORTEX_M0) || defined(__TARGET_CPU_CORTEX_M0PLUS) || defined(__TARGET_CPU_CORTEX_M3) || defined(__TARGET_CPU_CORTEX_M4) || defined(__TARGET_CPU_CORTEX_M7)
+#elif defined(__TARGET_CPU_CORTEX_M0) || defined(__TARGET_CPU_CORTEX_M0PLUS) || defined(__TARGET_CPU_CORTEX_M3) || defined(__TARGET_CPU_CORTEX_M4) || defined(__TARGET_CPU_CORTEX_M7) || defined(ARDUINO_NRF52_ADAFRUIT)
     #define EI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN      1
 #else
     #define EI_CLASSIFIER_TFLITE_ENABLE_CMSIS_NN      0
@@ -61,4 +62,5 @@
 #endif // CPU_ARC
 #endif // EI_CLASSIFIER_TFLITE_ENABLE_ARC
 
+// clang-format on
 #endif // _EI_CLASSIFIER_CONFIG_H_
