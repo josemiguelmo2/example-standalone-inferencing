@@ -188,7 +188,7 @@ ei_dsp_config_mfcc_t ei_dsp_config_3 = {
     101,
     300,
     0,
-    0.98000f,
+    0.000f,
     1
 };
 
