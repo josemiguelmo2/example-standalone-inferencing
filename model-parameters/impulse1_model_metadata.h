@@ -24,15 +24,8 @@
 
 #include <stdint.h>
 #include "model_types.h"
-#include "tflite-model/trained_model_compiled.h"
+#include "tflite-model/impulse1_model_compiled.h"
 #include "edge-impulse-sdk/classifier/ei_run_dsp.h"
-
-#if EI_CLASSIFIER_HAS_ANOMALY == 1
-#include "model-parameters/anomaly_clusters.h"
-#endif
-#if defined(EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER) && EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER == 1
-#include "tflite-model/tflite-resolver.h"
-#endif // EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER
 
 const char* impulse_1_categories[] = { "idle", "snake", "updown", "wave" };
 
@@ -84,6 +77,10 @@ ei_impulse_t impulse_1 = {
     62.5, // float frequency;
     false, // bool use_quantized_dsp_block;
     false, // bool object_detection;
+    0, // uint16_t object_detection_count;
+    0.5f, // float object_detection_threshold;
+    1, // uint8_t tflite_output_labels_tensor;
+    2, // uint8_t tflite_output_score_tensor;
     3673, // uint32_t tflite_arena_size;
     EI_CLASSIFIER_DATATYPE_INT8, // int tflite_input_datatype;
     1, // bool tflite_input_quantized;
@@ -110,11 +107,7 @@ ei_impulse_t impulse_1 = {
     impulse_1_dsp_blocks_i16_size, // size_t dsp_i16_blocks_size;
     impulse_1_dsp_blocks_i16, // ei_model_dsp_i16_t **dsp_i16_blocks;
     nullptr, // uint8_t *tflite_file;
-    0, // size_t tflite_file_size;
-    1, // uint8_t tflite_output_labels_tensor
-    2 // uint8_t tflite_output_score_tensor
+    0 // size_t tflite_file_size;
 };
-
-#define EI_CLASSIFIER_INFERENCING_ENGINE_LOAD_TFLITE   1
 
 #endif // _EI_CLASSIFIER_MODEL_METADATA_H_

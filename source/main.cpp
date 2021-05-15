@@ -3,10 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include "edge-impulse-sdk/classifier/ei_run_classifier.h"
-
-#if EI_CLASSIFIER_OBJECT_DETECTION == 1
-#warning "For object detection models, consider https://github.com/edgeimpulse/example-standalone-inferencing-linux which has full hardware acceleration"
-#endif
+#include "model-parameters/impulse1_model_metadata.h"
 
 std::string trim(const std::string& str) {
     size_t first = str.find_first_not_of(' ');
@@ -34,10 +31,46 @@ std::string read_file(const char *filename) {
     return ss;
 }
 
+void print_impulse_result(ei_impulse_t *impulse, ei_impulse_result_t *result) {
+    if (impulse->object_detection) {
+        for (size_t ix = 0; ix < impulse->object_detection_count; ix++) {
+            auto bb = result->bounding_boxes[ix];
+            if (bb.value == 0) {
+                continue;
+            }
+
+            printf("%s (%f) [ x: %u, y: %u, width: %u, height: %u ]\n", bb.label, bb.value, bb.x, bb.y, bb.width, bb.height);
+        }
+    }
+    else {
+        // print the predictions
+        printf("[");
+        for (size_t ix = 0; ix < impulse->label_count; ix++) {
+            printf("%.5f", result->classification[ix].value);
+            if (impulse->has_anomaly) {
+                printf(", ");
+            }
+            else {
+                if (ix != impulse->label_count - 1) {
+                    printf(", ");
+                }
+            }
+        }
+        if (impulse->has_anomaly) {
+            printf("%.3f", result->anomaly);
+        }
+        printf("]\n");
+    }
+}
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         printf("Requires one parameter (a comma-separated list of raw features, or a file pointing at raw features)\n");
         return 1;
+    }
+
+    if (impulse_1.object_detection) {
+        printf("WARN: For object detection models, consider https://github.com/edgeimpulse/example-standalone-inferencing-linux which has full hardware acceleration\n");
     }
 
     std::string input = argv[1];
@@ -60,43 +93,15 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    ei_impulse_result_t result;
+    ei_impulse_result_t result_1;
 
     signal_t signal;
     numpy::signal_from_buffer(&raw_features[0], raw_features.size(), &signal);
 
-    EI_IMPULSE_ERROR res = run_classifier(&impulse_1, &signal, &result, true);
+    EI_IMPULSE_ERROR res = run_classifier(&impulse_1, &signal, &result_1, true);
     printf("run_classifier returned: %d\n", res);
 
     printf("Begin output\n");
-
-#if EI_CLASSIFIER_OBJECT_DETECTION == 1
-    for (size_t ix = 0; ix < EI_CLASSIFIER_OBJECT_DETECTION_COUNT; ix++) {
-        auto bb = result.bounding_boxes[ix];
-        if (bb.value == 0) {
-            continue;
-        }
-
-        printf("%s (%f) [ x: %u, y: %u, width: %u, height: %u ]\n", bb.label, bb.value, bb.x, bb.y, bb.width, bb.height);
-    }
-#else
-    // print the predictions
-    printf("[");
-    for (size_t ix = 0; ix < impulse_1.label_count; ix++) {
-        printf("%.5f", result.classification[ix].value);
-#if EI_CLASSIFIER_HAS_ANOMALY == 1
-        printf(", ");
-#else
-        if (ix != impulse_1.label_count - 1) {
-            printf(", ");
-        }
-#endif
-    }
-#if EI_CLASSIFIER_HAS_ANOMALY == 1
-    printf("%.3f", result.anomaly);
-#endif
-    printf("]\n");
-#endif
-
+    print_impulse_result(&impulse_1, &result_1);
     printf("End output\n");
 }

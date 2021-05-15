@@ -92,4 +92,6 @@ typedef struct {
     bool invert_features;
 } ei_dsp_config_audio_syntiant_t;
 
+#define EI_CLASSIFIER_INFERENCING_ENGINE_LOAD_TFLITE   1
+
 #endif // EI_CLASSIFIER_MODEL_TYPES_H_
