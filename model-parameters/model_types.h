@@ -5,6 +5,9 @@
 #include "edge-impulse-sdk/tensorflow/lite/c/common.h"
 #include "edge-impulse-sdk/classifier/ei_model_types.h"
 
+// if the resolver is present, we add this
+#include "tflite-model/tflite-resolver.h"
+
 typedef struct {
     uint16_t implementation_version;
     int axes;
@@ -92,6 +95,7 @@ typedef struct {
     bool invert_features;
 } ei_dsp_config_audio_syntiant_t;
 
+// list all engines we need to load here...
 #define EI_CLASSIFIER_INFERENCING_ENGINE_LOAD_TFLITE   1
 
 #endif // EI_CLASSIFIER_MODEL_TYPES_H_
