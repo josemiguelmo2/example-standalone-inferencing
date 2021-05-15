@@ -19,8 +19,8 @@
 * SOFTWARE.
 */
 
-#ifndef _EI_CLASSIFIER_MODEL_METADATA_H_
-#define _EI_CLASSIFIER_MODEL_METADATA_H_
+#ifndef _EI_CLASSIFIER_IMPULSE1_MODEL_METADATA_H_
+#define _EI_CLASSIFIER_IMPULSE1_MODEL_METADATA_H_
 
 #include <stdint.h>
 #include "model_types.h"
@@ -110,4 +110,4 @@ ei_impulse_t impulse_1 = {
     0 // size_t tflite_file_size;
 };
 
-#endif // _EI_CLASSIFIER_MODEL_METADATA_H_
+#endif // _EI_CLASSIFIER_IMPULSE1_MODEL_METADATA_H_
