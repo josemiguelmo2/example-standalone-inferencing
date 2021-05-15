@@ -54,9 +54,9 @@ int main(int argc, char **argv) {
         raw_features.push_back(std::stof(trim(token)));
     }
 
-    if (raw_features.size() != EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE) {
+    if (raw_features.size() != impulse_1.dsp_input_frame_size) {
         printf("The size of your 'features' array is not correct. Expected %d items, but had %lu\n",
-            EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, raw_features.size());
+            impulse_1.dsp_input_frame_size, raw_features.size());
         return 1;
     }
 
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     signal_t signal;
     numpy::signal_from_buffer(&raw_features[0], raw_features.size(), &signal);
 
-    EI_IMPULSE_ERROR res = run_classifier(&signal, &result, true);
+    EI_IMPULSE_ERROR res = run_classifier(&impulse_1, &signal, &result, true);
     printf("run_classifier returned: %d\n", res);
 
     printf("Begin output\n");
@@ -82,12 +82,12 @@ int main(int argc, char **argv) {
 #else
     // print the predictions
     printf("[");
-    for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
+    for (size_t ix = 0; ix < impulse_1.label_count; ix++) {
         printf("%.5f", result.classification[ix].value);
 #if EI_CLASSIFIER_HAS_ANOMALY == 1
         printf(", ");
 #else
-        if (ix != EI_CLASSIFIER_LABEL_COUNT - 1) {
+        if (ix != impulse_1.label_count - 1) {
             printf(", ");
         }
 #endif

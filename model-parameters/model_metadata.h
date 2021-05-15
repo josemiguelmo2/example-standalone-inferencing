@@ -27,6 +27,13 @@
 #include "tflite-model/trained_model_compiled.h"
 #include "edge-impulse-sdk/classifier/ei_run_dsp.h"
 
+#if EI_CLASSIFIER_HAS_ANOMALY == 1
+#include "model-parameters/anomaly_clusters.h"
+#endif
+#if defined(EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER) && EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER == 1
+#include "tflite-model/tflite-resolver.h"
+#endif // EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER
+
 const char* impulse_1_categories[] = { "idle", "snake", "updown", "wave" };
 
 ei_dsp_config_spectral_analysis_t impulse_1_dsp_config_458 = {
@@ -61,61 +68,53 @@ ei_model_dsp_i16_t impulse_1_dsp_blocks_i16[impulse_1_dsp_blocks_i16_size] = {
 };
 
 ei_impulse_t impulse_1 = {
-    1,
-    "EdgeImpulse Inc.",
-    "Continuous gestures",
-    295,
-    33,
-    123,
-    3,
-    (3 * 123),
-    0,
-    0,
-    16,
-    4,
-    0,
-    62.5,
-    false,
-    false,
-    3673,
-    EI_CLASSIFIER_DATATYPE_INT8,
-    1,
-    0.11557556688785553,
-    -128,
-    EI_CLASSIFIER_DATATYPE_INT8,
-    1,
-    0.00390625,
-    -128,
-    EI_CLASSIFIER_TFLITE,
-    true,
-    true,
-    (123 / 4),
-    4,
-    true,
-    impulse_1_categories,
-    &trained_model_1_input,
-    &trained_model_1_output,
-    &trained_model_1_init,
-    &trained_model_1_invoke,
-    &trained_model_1_reset,
-    impulse_1_dsp_blocks_size,
-    impulse_1_dsp_blocks,
-    impulse_1_dsp_blocks_i16_size,
-    impulse_1_dsp_blocks_i16
+    1, // uint32_t project_id;
+    "EdgeImpulse Inc.", // const char *project_owner;
+    "Continuous gestures", // const char *project_name;
+    295, // int deploy_version;
+    33, // uint32_t nn_input_frame_size;
+    123, // uint32_t raw_sample_count;
+    3, // uint32_t raw_samples_per_frame;
+    (3 * 123), // uint32_t dsp_input_frame_size;
+    0, // uint32_t input_width;
+    0, // uint32_t input_height;
+    16, // float interval_ms;
+    4, // uint16_t label_count;
+    0, // bool has_anomaly;
+    62.5, // float frequency;
+    false, // bool use_quantized_dsp_block;
+    false, // bool object_detection;
+    3673, // uint32_t tflite_arena_size;
+    EI_CLASSIFIER_DATATYPE_INT8, // int tflite_input_datatype;
+    1, // bool tflite_input_quantized;
+    0.11557556688785553, // float tflite_input_scale;
+    -128, // float tflite_input_zeropoint;
+    EI_CLASSIFIER_DATATYPE_INT8, // int tflite_output_datatype;
+    1, // bool tflite_output_quantized;
+    0.00390625, // float tflite_output_scale;
+    -128, // float tflite_output_zeropoint;
+    EI_CLASSIFIER_TFLITE, // int inferencing_engine;
+    true, // bool compiled;
+    true, // bool has_tflite_ops_resolver;
+    (123 / 4), // int sensor;
+    4, // int slice_size;
+    true, // int slices_per_model_window;
+    impulse_1_categories, // const char **categories;
+    &trained_model_1_input, // TfLiteTensor* (*model_input)(int);
+    &trained_model_1_output, // TfLiteTensor* (*model_output)(int);
+    &trained_model_1_init, // TfLiteStatus (*model_init)(void*(*alloc_fnc)(size_t,size_t));
+    &trained_model_1_invoke, // TfLiteStatus (*model_invoke)();
+    &trained_model_1_reset, // TfLiteStatus (*model_reset)(void (*free)(void* ptr));
+    impulse_1_dsp_blocks_size, // size_t dsp_blocks_size;
+    impulse_1_dsp_blocks, // ei_model_dsp_t **dsp_blocks;
+    impulse_1_dsp_blocks_i16_size, // size_t dsp_i16_blocks_size;
+    impulse_1_dsp_blocks_i16, // ei_model_dsp_i16_t **dsp_i16_blocks;
+    nullptr, // uint8_t *tflite_file;
+    0, // size_t tflite_file_size;
+    1, // uint8_t tflite_output_labels_tensor
+    2 // uint8_t tflite_output_score_tensor
 };
 
-#define EI_CLASSIFIER_INFERENCING_ENGINE         EI_CLASSIFIER_TFLITE
-#define EI_CLASSIFIER_COMPILED                   1
-#define EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER    1
-
-#if EI_CLASSIFIER_INFERENCING_ENGINE == EI_CLASSIFIER_TFLITE && EI_CLASSIFIER_USE_FULL_TFLITE == 1
-#undef EI_CLASSIFIER_INFERENCING_ENGINE
-#undef EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER
-#define EI_CLASSIFIER_INFERENCING_ENGINE          EI_CLASSIFIER_TFLITE_FULL
-#define EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER     0
-#if EI_CLASSIFIER_COMPILED == 1
-#error "Cannot use full TensorFlow Lite with EON"
-#endif
-#endif // EI_CLASSIFIER_INFERENCING_ENGINE == EI_CLASSIFIER_TFLITE && EI_CLASSIFIER_USE_FULL_TFLITE == 1
+#define EI_CLASSIFIER_INFERENCING_ENGINE_LOAD_TFLITE   1
 
 #endif // _EI_CLASSIFIER_MODEL_METADATA_H_
