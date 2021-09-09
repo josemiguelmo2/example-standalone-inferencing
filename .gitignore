@@ -5,3 +5,4 @@ deploy.zip
 *.o
 *.bmp
 *.ipynb
+features.txt

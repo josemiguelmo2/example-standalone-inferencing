@@ -141,13 +141,13 @@ int main(int argc, char **argv) {
             float v[2] = { v1f, v2f };
             // softmax(v, 2);
 
-            if (v[1] > v[0]) { // cube
+            if (v[1] > 0.3f) { // cube
                 cube_t cube = { 0 };
                 cube.row = row;
                 cube.col = col;
                 bool found_overlapping_cube = false;
                 for (auto other_cube : cubes) {
-                    if (abs((int)(cube.row - other_cube.row)) + abs((int)(cube.col - other_cube.col)) <= 1) {
+                    if (abs((int)(cube.row - other_cube.row)) <= 1 && abs((int)(cube.col - other_cube.col)) <= 1) {
                         // overlapping
                         found_overlapping_cube = true;
                     }
