@@ -6,7 +6,7 @@
 #include <math.h>
 #include "edge-impulse-sdk/porting/ei_classifier_porting.h"
 #include "edge-impulse-sdk/classifier/ei_aligned_malloc.h"
-#include "tflite-model/20210903_123610.float32.cpp.h"
+#include "tflite-model/20210910_134700.int8_io_int8.cpp.h"
 #include "bitmap_helper.h"
 
 #if EI_CLASSIFIER_OBJECT_DETECTION == 1
