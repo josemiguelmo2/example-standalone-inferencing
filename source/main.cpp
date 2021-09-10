@@ -101,9 +101,42 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    if (input_tensor->dims->size != 4) {
+        ei_printf("Invalid input_tensor dimensions, expected 4 but got %d\n", (int)input_tensor->dims->size);
+        return 1;
+    }
+
+    if (input_tensor->dims->data[3] != 1) {
+        ei_printf("Invalid input_tensor dimensions, expected 1 channel but got %d\n", (int)input_tensor->dims->data[3]);
+        return 1;
+    }
+
+    int input_img_width = input_tensor->dims->data[1];
+    int input_img_height = input_tensor->dims->data[2];
+
+    if (input_img_width * input_img_height != (int)raw_features.size()) {
+        ei_printf("Invalid number of features, expected %d but received %d\n",
+            input_img_width * input_img_height, (int)raw_features.size());
+        return 1;
+    }
+
+    ei_printf("Input dims size %d, bytes %d\n", (int)input_tensor->dims->size, (int)input_tensor->bytes);
+    for (size_t ix = 0; ix < input_tensor->dims->size; ix++) {
+        ei_printf("    dim %d: %d\n", (int)ix, (int)input_tensor->dims->data[ix]);
+    }
+
+    // one byte per value
+    bool is_quantized = input_tensor->bytes == input_img_width * input_img_height;
+
+    ei_printf("Is quantized? %d\n", is_quantized);
+
     for (size_t ix = 0; ix < raw_features.size(); ix++) {
-        // input_tensor->data.int8[ix] = static_cast<int8_t>(round(raw_features.at(ix) / input_tensor->params.scale) + input_tensor->params.zero_point);
-        input_tensor->data.f[ix] = raw_features.at(ix);
+        if (is_quantized) {
+            input_tensor->data.int8[ix] = static_cast<int8_t>(round(raw_features.at(ix) / input_tensor->params.scale) + input_tensor->params.zero_point);
+        }
+        else {
+            input_tensor->data.f[ix] = raw_features.at(ix);
+        }
     }
 
     status = model_invoke();
@@ -114,7 +147,7 @@ int main(int argc, char **argv) {
 
     ei_printf("Output dims size %d, bytes %d\n", (int)output_tensor->dims->size, (int)output_tensor->bytes);
     for (size_t ix = 0; ix < output_tensor->dims->size; ix++) {
-        ei_printf("dim %d: %d\n", (int)ix, (int)output_tensor->dims->data[ix]);
+        ei_printf("    dim %d: %d\n", (int)ix, (int)output_tensor->dims->data[ix]);
     }
 
     // ei_printf("[\n");
@@ -126,17 +159,22 @@ int main(int argc, char **argv) {
         for (size_t col = 0; col < output_tensor->dims->data[2]; col++) {
             size_t loc = ((row * output_tensor->dims->data[2]) + col) * 2;
 
-            // int8_t v1 = output_tensor->data.int8[loc+0];
-            // int8_t v2 = output_tensor->data.int8[loc+1];
+            float v1f, v2f;
 
-            // float zero_point = output_tensor->params.zero_point;
-            // float scale = output_tensor->params.scale;
+            if (is_quantized) {
+                int8_t v1 = output_tensor->data.int8[loc+0];
+                int8_t v2 = output_tensor->data.int8[loc+1];
 
-            // float v1f = static_cast<float>(v1 - zero_point) * scale;
-            // float v2f = static_cast<float>(v2 - zero_point) * scale;
+                float zero_point = output_tensor->params.zero_point;
+                float scale = output_tensor->params.scale;
 
-            float v1f = output_tensor->data.f[loc+0];
-            float v2f = output_tensor->data.f[loc+1];
+                v1f = static_cast<float>(v1 - zero_point) * scale;
+                v2f = static_cast<float>(v2 - zero_point) * scale;
+            }
+            else {
+                v1f = output_tensor->data.f[loc+0];
+                v2f = output_tensor->data.f[loc+1];
+            }
 
             float v[2] = { v1f, v2f };
             // softmax(v, 2);
@@ -200,12 +238,12 @@ int main(int argc, char **argv) {
         for (size_t offset_r = 0; offset_r < 8; offset_r++) {
             for (size_t offset_c = 0; offset_c < 8; offset_c++) {
                 // todo: handle overflow to next row here
-                raw_features[(((cube.row * 8) + offset_r) * 320) + ((cube.col * 8) + offset_c)] = (float)0xff0000;
+                raw_features[(((cube.row * 8) + offset_r) * input_img_width) + ((cube.col * 8) + offset_c)] = (float)0xff0000;
             }
         }
-        // raw_features[(cube.row * 8 * 320) + (cube.col * 8)] = (float)0xff0000;
+        // raw_features[(cube.row * 8 * input_img_width) + (cube.col * 8)] = (float)0xff0000;
     }
-    create_bitmap_file("debug.bmp", raw_features.data(), 320, 320);
+    create_bitmap_file("debug.bmp", raw_features.data(), input_img_width, input_img_height);
 
     ei_printf("Running model OK\n");
 }
