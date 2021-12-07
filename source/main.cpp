@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include "edge-impulse-sdk/classifier/ei_run_classifier.h"
+#include "bitmap_helper.h"
 
 #if EI_CLASSIFIER_OBJECT_DETECTION == 1
 #warning "For object detection models, consider https://github.com/edgeimpulse/example-standalone-inferencing-linux which has full hardware acceleration"
@@ -65,7 +66,7 @@ int main(int argc, char **argv) {
     signal_t signal;
     numpy::signal_from_buffer(&raw_features[0], raw_features.size(), &signal);
 
-    EI_IMPULSE_ERROR res = run_classifier(&signal, &result, true);
+    EI_IMPULSE_ERROR res = run_classifier(&signal, &result, false);
     printf("run_classifier returned: %d\n", res);
 
     printf("Begin output\n");
@@ -99,4 +100,19 @@ int main(int argc, char **argv) {
 #endif
 
     printf("End output\n");
+
+    for (size_t ix = 0; ix < EI_CLASSIFIER_OBJECT_DETECTION_COUNT; ix++) {
+        auto bb = result.bounding_boxes[ix];
+        if (bb.value == 0) {
+            continue;
+        }
+
+        for (size_t x = bb.x; x < bb.x + bb.width; x++) {
+            for (size_t y = bb.y; y < bb.y + bb.height; y++) {
+                raw_features[(y * EI_CLASSIFIER_INPUT_WIDTH) + x] = (float)0x00ff00;
+            }
+        }
+    }
+
+    create_bitmap_file("debug.bmp", raw_features.data(), EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT);
 }
