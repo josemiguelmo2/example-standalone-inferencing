@@ -11,6 +11,10 @@ CXXSOURCES = source/main.cpp
 
 # Search path for header files (current directory)
 CFLAGS += -I.
+CFLAGS += -Iedge-impulse-sdk
+CFLAGS += -Iedge-impulse-sdk/third_party/flatbuffers/include
+CFLAGS += -Iedge-impulse-sdk/third_party/gemmlowp
+CFLAGS += -Iedge-impulse-sdk/third_party
 
 # C and C++ Compiler flags
 CFLAGS += -Wall						# Include all warnings
@@ -18,7 +22,6 @@ CFLAGS += -g						# Generate GDB debugger information
 CFLAGS += -Wno-strict-aliasing		# Disable warnings about strict aliasing
 CFLAGS += -Os						# Optimize for size
 CFLAGS += -DNDEBUG					# Disable assert() macro
-CFLAGS += -DEI_CLASSIFIER_ENABLE_DETECTION_POSTPROCESS_OP	# Add TFLite_Detection_PostProcess operation
 
 # C++ only compiler flags
 CXXFLAGS += -std=c++14				# Use C++14 standard
@@ -48,13 +51,18 @@ CCSOURCES +=
 
 # Use TensorFlow Lite for Microcontrollers (TFLM)
 CFLAGS += -DTF_LITE_DISABLE_X86_NEON=1
-CSOURCES +=	edge-impulse-sdk/tensorflow/lite/c/common.c
+CSOURCES +=
 CCSOURCES +=	$(wildcard edge-impulse-sdk/tensorflow/lite/kernels/*.cc) \
 				$(wildcard edge-impulse-sdk/tensorflow/lite/kernels/internal/*.cc) \
 				$(wildcard edge-impulse-sdk/tensorflow/lite/micro/kernels/*.cc) \
 				$(wildcard edge-impulse-sdk/tensorflow/lite/micro/*.cc) \
 				$(wildcard edge-impulse-sdk/tensorflow/lite/micro/memory_planner/*.cc) \
-				$(wildcard edge-impulse-sdk/tensorflow/lite/core/api/*.cc)
+				$(wildcard edge-impulse-sdk/tensorflow/lite/core/api/*.cc) \
+				$(wildcard edge-impulse-sdk/tensorflow/lite/core/c/*.cc) \
+				$(wildcard edge-impulse-sdk/tensorflow/lite/kernels/internal/reference/*.cc) \
+				$(wildcard edge-impulse-sdk/tensorflow/lite/schema/*.cc) \
+				$(wildcard edge-impulse-sdk/tensorflow/lite/micro/tflite_bridge/*.cc) \
+				$(wildcard edge-impulse-sdk/tensorflow/lite/micro/arena_allocator/*.cc)
 
 # Include CMSIS-NN if compiling for an Arm target that supports it
 ifeq (${CMSIS_NN}, 1)
